@@ -1,2 +1,15 @@
 .env
 .venv
+venv/
+ENV/
+env.bak/
+venv.bak/
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+*.wal
+sample_data/analyst.db
+static/charts/*.png
+.DS_Store
+Thumbs.db

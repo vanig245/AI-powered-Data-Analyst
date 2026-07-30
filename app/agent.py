@@ -6,7 +6,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from app.config import settings
 from app.data_loader import data_loader
 from app.session_manager import session_manager
-from app.tools.sql_tool import execute_sql
+from app.tools.sql_tools import execute_sql
 from app.tools.chart_tool import generate_chart
 from app.tools.anomaly_tool import detect_anomalies
 

@@ -1,0 +1,13 @@
+Date,Region,Product,Category,Units_Sold,Revenue
+2023-01-01,North,Widget A,Electronics,100,2500
+2023-01-02,South,Widget B,Electronics,150,3000
+2023-01-03,East,Gadget X,Hardware,200,4000
+2023-01-04,West,Gadget Y,Hardware,120,2400
+2023-01-05,North,Widget A,Electronics,110,2750
+2023-01-06,South,Widget C,Accessories,90,1350
+2023-01-07,East,Gadget X,Hardware,210,4200
+2023-01-08,West,Widget B,Electronics,10000,250000
+2023-01-09,North,Widget C,Accessories,95,1425
+2023-01-10,South,Gadget Y,Hardware,130,2600
+2023-01-11,East,Widget A,Electronics,105,2625
+2023-01-12,West,Widget C,Accessories,85,1275

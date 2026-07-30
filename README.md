@@ -1,4 +1,3 @@
-```markdown
 # AI Data Analyst
 
 An intelligent, autonomous Data Analytics Assistant powered by **FastAPI**, **LangChain**, **DuckDB**, and **Groq LLMs**. Upload any CSV dataset and perform natural language querying, automated SQL generation, statistical anomaly detection, and dynamic data visualization in real time.
@@ -40,12 +39,11 @@ graph TD
 
 ## Screenshots & Demo
 
+![alt text](image.png)
+![alt text](image-1.png)
 
-### 1. Dashboard & Dataset Upload
+### Video Demonstration
 
-### 2. Conversational Analysis & Chart Generation
-
-### 🎥 Video Demonstration
 
 * **Short Demo Video**: [Watch Demo Video](https://www.google.com/search?q=docs/demo.mp4) *(or replace with YouTube/Loom link)*
 
@@ -198,7 +196,5 @@ A pre-configured sample dataset (`sales_data.csv`) is provided in the `sample_da
 
 ---
 
-
-```
 
 ```

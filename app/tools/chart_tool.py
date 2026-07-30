@@ -29,7 +29,7 @@ def generate_chart(sql_query: str, chart_type: str, x_column: str, y_column: str
         if chart_type == 'bar':
             sns.barplot(data=df, x=x_column, y=y_column)
         elif chart_type == 'line':
-            sns.lineplot(data=df, x=x_column, y=y_column)
+            sns.lineplot(data=df, x=x_column, y=y_column, marker='o', markersize=8)
         elif chart_type == 'scatter':
             sns.scatterplot(data=df, x=x_column, y=y_column)
         elif chart_type == 'pie':
@@ -45,7 +45,7 @@ def generate_chart(sql_query: str, chart_type: str, x_column: str, y_column: str
         filepath = os.path.join(CHARTS_DIR, filename)
         plt.savefig(filepath)
         plt.close()
-        
+
         return f"Chart generated successfully. Embed this image in your response using markdown: ![img](/static/charts/{filename})"
         
     except Exception as e:

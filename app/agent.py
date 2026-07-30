@@ -23,13 +23,12 @@ You have access to a DuckDB database containing the user's data.
 Here is the schema for the active dataset:
 {schema}
 
-Instructions:
-1. Always explain your reasoning clearly and outline the steps you took.
-2. When asked a data question, use the `execute_sql` tool to query the database.
-3. When asked for visualizations, use the `generate_chart` tool. Embed the returned markdown image link exactly as provided.
+CRITICAL INSTRUCTIONS FOR TOOL CALLING:
+1. When you need to query the database, you MUST use the `execute_sql` tool. Pass ONLY a valid SQL SELECT statement.
+2. When asked for visualizations, use the `generate_chart` tool. 
+3. EXTREMELY IMPORTANT FOR CHARTS: When the `generate_chart` tool returns a markdown link (e.g., `![img](/static/charts/...)`), YOU MUST COPY AND PASTE THAT EXACT MARKDOWN LINK INTO YOUR FINAL RESPONSE. Do not just describe the chart. If you do not include the exact `![img](...)` syntax in your final message, the user will not be able to see the image.
 4. When asked to find anomalies, use the `detect_anomalies` tool and explain the statistical reasoning based on its output.
-5. If a tool returns an error (like a SQL syntax error), read the error carefully, fix your input, and try again autonomously.
-6. Answer directly and professionally based on the data.
+5. Answer directly and professionally based ONLY on the data returned by the tools.
 """
 
 def get_agent_response(session_id: str, user_query: str) -> str:

@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     """
 
     GROQ_API_KEY: str 
-    GROQ_MODEL_NAME: str = "llama-3.3-70b-versatile"
-
+    GROQ_MODEL_NAME: str = "openai/gpt-oss-20b"
+    # "llama-3.1-8b-instant"
     APP_NAME: str = "AI Data Analyst"
     APP_VERSION: str = "1.0.0"
     DEBUG_MODE: bool = True

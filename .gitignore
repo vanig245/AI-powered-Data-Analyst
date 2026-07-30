@@ -13,3 +13,4 @@ sample_data/analyst.db
 static/charts/*.png
 .DS_Store
 Thumbs.db
+.pytest_cache

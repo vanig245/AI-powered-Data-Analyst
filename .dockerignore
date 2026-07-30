@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+static/charts/*
+!static/charts/.gitkeep
+sample_data/*
+.venv/
+venv/

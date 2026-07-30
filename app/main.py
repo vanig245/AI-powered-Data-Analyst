@@ -3,7 +3,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-
 from app.config import settings
 from app.data_loader import data_loader
 from app.session_manager import session_manager

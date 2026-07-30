@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Data Analyst</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js to render Markdown responses (including chart images) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center shadow-md">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+            🤖 AI Data Analyst
+        </h1>
+        <div id="status" class="text-sm bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30">
+            No dataset uploaded
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar: File Upload & Instructions -->
+        <aside class="w-80 bg-slate-800/50 border-r border-slate-700 p-4 flex flex-col gap-4">
+            <div>
+                <label class="block text-sm font-semibold mb-2">Upload Dataset (.csv)</label>
+                <input type="file" id="csvFile" accept=".csv" 
+                    class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+                <button onclick="uploadFile()" id="uploadBtn" class="mt-3 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    Upload & Process
+                </button>
+            </div>
+
+            <hr class="border-slate-700">
+
+            <div class="flex-1 overflow-y-auto">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Example Questions</h3>
+                <ul class="text-sm space-y-2 text-slate-300">
+                    <li class="bg-slate-800 p-2 rounded cursor-pointer hover:bg-slate-700" onclick="setQuery(this)">Which region generated the highest revenue?</li>
+                    <li class="bg-slate-800 p-2 rounded cursor-pointer hover:bg-slate-700" onclick="setQuery(this)">Show monthly sales trends.</li>
+                    <li class="bg-slate-800 p-2 rounded cursor-pointer hover:bg-slate-700" onclick="setQuery(this)">Detect anomalies in the dataset.</li>
+                    <li class="bg-slate-800 p-2 rounded cursor-pointer hover:bg-slate-700" onclick="setQuery(this)">Create a bar chart of top products.</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Chat Area -->
+        <main class="flex-1 flex flex-col bg-slate-900 overflow-hidden">
+            <!-- Messages Container -->
+            <div id="chat-container" class="flex-1 p-6 overflow-y-auto space-y-4">
+                <div class="flex items-start gap-3">
+                    <div class="bg-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">AI</div>
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl max-w-2xl text-slate-200">
+                        Hello! Upload a CSV file using the sidebar to begin analyzing your data with natural language.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="p-4 bg-slate-800 border-t border-slate-700">
+                <form id="chat-form" onsubmit="sendMessage(event)" class="flex gap-2">
+                    <input type="text" id="user-input" placeholder="Ask a question about your data..." 
+                        class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-indigo-500" disabled>
+                    <button type="submit" id="send-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 rounded-xl font-medium transition-colors disabled:opacity-50" disabled>
+                        Send
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Frontend JavaScript Logic -->
+    <script>
+        let sessionId = null;
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('csvFile');
+            const statusDiv = document.getElementById('status');
+            if (fileInput.files.length === 0) {
+                alert("Please select a CSV file first.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            statusDiv.innerText = "Uploading...";
+            statusDiv.className = "text-sm bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30";
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    sessionId = data.session_id;
+                    statusDiv.innerText = `Active: ${data.table_name}`;
+                    statusDiv.className = "text-sm bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30";
+                    
+                    // Enable chat inputs
+                    document.getElementById('user-input').disabled = false;
+                    document.getElementById('send-btn').disabled = false;
+                    
+                    appendMessage("AI", `Dataset **${data.table_name}** loaded successfully! What would you like to analyze?`);
+                } else {
+                    alert(data.detail || "Upload failed");
+                    statusDiv.innerText = "Upload failed";
+                }
+            } catch (err) {
+                alert("Error connecting to server.");
+            }
+        }
+
+        function setQuery(element) {
+            document.getElementById('user-input').value = element.innerText;
+        }
+
+        async function sendMessage(event) {
+            event.preventDefault();
+            const inputField = document.getElementById('user-input');
+            const message = inputField.value.trim();
+            if (!message || !sessionId) return;
+
+            appendMessage("You", message);
+            inputField.value = "";
+
+            // Create loading placeholder
+            const container = document.getElementById('chat-container');
+            const loadingId = 'loading-' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = "flex items-start gap-3";
+            loadingDiv.id = loadingId;
+            loadingDiv.innerHTML = `
+                <div class="bg-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">AI</div>
+                <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl text-slate-400 animate-pulse">Analyzing data and reasoning...</div>
+            `;
+            container.appendChild(loadingDiv);
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, message: message })
+                });
+                const data = await response.json();
+                
+                // Remove loading message
+                document.getElementById(loadingId).remove();
+
+                if (response.ok) {
+                    appendMessage("AI", data.response);
+                } else {
+                    appendMessage("AI", `Error: ${data.detail || "Failed to fetch response"}`);
+                }
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                appendMessage("AI", "Error connecting to the server backend.");
+            }
+        }
+
+        function appendMessage(sender, text) {
+            const container = document.getElementById('chat-container');
+            const wrapper = document.createElement('div');
+            wrapper.className = "flex items-start gap-3";
+            
+            const isAi = sender === "AI";
+            const avatarBg = isAi ? "bg-indigo-600" : "bg-emerald-600";
+            
+            // Parse Markdown (essential for displaying charts and tables nicely)
+            const formattedText = isAi ? marked.parse(text) : `<p>${text}</p>`;
+
+            wrapper.innerHTML = `
+                <div class="${avatarBg} text-white rounded-full h-8 w-8 flex items-center justify-center font-bold shrink-0">${sender[0]}</div>
+                <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl max-w-3xl text-slate-200 prose prose-invert">
+                    ${formattedText}
+                </div>
+            `;
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -21,4 +21,5 @@ def execute_sql(query: str) -> str:
         return result_str + truncation_warning
 
     except Exception as e:
+
         return f"Error executing SQL query: {str(e)}\nPlease check your SQL syntax and try again."

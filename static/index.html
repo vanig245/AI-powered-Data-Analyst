@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Data Analyst</title>
-    <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Marked.js to render Markdown responses (including chart images) -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.js"></script>
+    <!-- Using a highly stable, updated CDN for Markdown parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 h-screen flex flex-col">
 
     <!-- Header -->
     <header class="bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center shadow-md">
-        <h1 class="text-xl font-bold flex items-center gap-2">
-            🤖 AI Data Analyst
-        </h1>
+        <h1 class="text-xl font-bold flex items-center gap-2">🤖 AI Data Analyst</h1>
         <div id="status" class="text-sm bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30">
             No dataset uploaded
         </div>
@@ -23,8 +20,7 @@
 
     <!-- Main Content Layout -->
     <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Sidebar: File Upload & Instructions -->
+        <!-- Sidebar -->
         <aside class="w-80 bg-slate-800/50 border-r border-slate-700 p-4 flex flex-col gap-4">
             <div>
                 <label class="block text-sm font-semibold mb-2">Upload Dataset (.csv)</label>
@@ -34,9 +30,7 @@
                     Upload & Process
                 </button>
             </div>
-
             <hr class="border-slate-700">
-
             <div class="flex-1 overflow-y-auto">
                 <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Example Questions</h3>
                 <ul class="text-sm space-y-2 text-slate-300">
@@ -50,7 +44,6 @@
 
         <!-- Chat Area -->
         <main class="flex-1 flex flex-col bg-slate-900 overflow-hidden">
-            <!-- Messages Container -->
             <div id="chat-container" class="flex-1 p-6 overflow-y-auto space-y-4">
                 <div class="flex items-start gap-3">
                     <div class="bg-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">AI</div>
@@ -60,7 +53,6 @@
                 </div>
             </div>
 
-            <!-- Input Bar -->
             <div class="p-4 bg-slate-800 border-t border-slate-700">
                 <form id="chat-form" onsubmit="sendMessage(event)" class="flex gap-2">
                     <input type="text" id="user-input" placeholder="Ask a question about your data..." 
@@ -92,10 +84,7 @@
             statusDiv.className = "text-sm bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30";
 
             try {
-                const response = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch('/api/upload', { method: 'POST', body: formData });
                 const data = await response.json();
                 
                 if (response.ok) {
@@ -103,7 +92,6 @@
                     statusDiv.innerText = `Active: ${data.table_name}`;
                     statusDiv.className = "text-sm bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30";
                     
-                    // Enable chat inputs
                     document.getElementById('user-input').disabled = false;
                     document.getElementById('send-btn').disabled = false;
                     
@@ -130,7 +118,6 @@
             appendMessage("You", message);
             inputField.value = "";
 
-            // Create loading placeholder
             const container = document.getElementById('chat-container');
             const loadingId = 'loading-' + Date.now();
             const loadingDiv = document.createElement('div');
@@ -151,7 +138,6 @@
                 });
                 const data = await response.json();
                 
-                // Remove loading message
                 document.getElementById(loadingId).remove();
 
                 if (response.ok) {
@@ -168,17 +154,29 @@
         function appendMessage(sender, text) {
             const container = document.getElementById('chat-container');
             const wrapper = document.createElement('div');
-            wrapper.className = "flex items-start gap-3";
+            wrapper.className = "flex items-start gap-3 w-full";
             
             const isAi = sender === "AI";
             const avatarBg = isAi ? "bg-indigo-600" : "bg-emerald-600";
             
-            // Parse Markdown (essential for displaying charts and tables nicely)
-            const formattedText = isAi ? marked.parse(text) : `<p>${text}</p>`;
+            // BULLETPROOF PARSING
+            let formattedText = text;
+            if (isAi) {
+                try {
+                    if (typeof marked !== 'undefined') {
+                        formattedText = marked.parse(text);
+                    }
+                } catch (e) {
+                    console.error("Markdown parsing failed:", e);
+                    formattedText = text;
+                }
+            } else {
+                formattedText = `<p>${text}</p>`;
+            }
 
             wrapper.innerHTML = `
                 <div class="${avatarBg} text-white rounded-full h-8 w-8 flex items-center justify-center font-bold shrink-0">${sender[0]}</div>
-                <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl max-w-3xl text-slate-200 prose prose-invert">
+                <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl max-w-3xl text-slate-200 overflow-x-auto w-full">
                     ${formattedText}
                 </div>
             `;

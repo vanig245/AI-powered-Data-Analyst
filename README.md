@@ -42,6 +42,13 @@ graph TD
 ![alt text](image.png)
 ![alt text](image-1.png)
 
+### Video Demonstration
+<video src="video.mov" controls="controls" style="max-width: 100%;">
+  Your browser does not support the video tag.
+</video>
+
+---
+
 ## Tech Stack
 
 * **Backend Engine**: Python 3.10+, FastAPI, Uvicorn

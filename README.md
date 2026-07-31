@@ -42,13 +42,6 @@ graph TD
 ![alt text](image.png)
 ![alt text](image-1.png)
 
-### Video Demonstration
-
-
-* **Short Demo Video**: [Watch Demo Video](https://www.google.com/search?q=docs/demo.mp4) *(or replace with YouTube/Loom link)*
-
----
-
 ## Tech Stack
 
 * **Backend Engine**: Python 3.10+, FastAPI, Uvicorn

@@ -5,29 +5,24 @@ from app.tools.anomaly_tool import detect_anomalies
 
 def test_detect_anomalies_finds_outlier():
     """Test that the Z-score logic successfully flags a massive mathematical outlier."""
-    # 1. Clean up any leftover data from previous failed test runs
     data_loader.conn.execute("DROP TABLE IF EXISTS anomaly_test")
     
-    # 2. Setup: Create table and insert fresh data
     data_loader.conn.execute("CREATE TABLE anomaly_test (value INTEGER)")
     normal_data = ", ".join(["(10)"] * 15)
     data_loader.conn.execute(f"INSERT INTO anomaly_test VALUES {normal_data}, (10000)")
     
-    # 3. Execute the tool
     result = detect_anomalies.invoke({
         "sql_query": "SELECT * FROM anomaly_test", 
         "column_name": "value"
     })
     
-    # 4. Assertions
     assert "10000" in result
     assert "statistical_context" in result
     
     parsed_result = json.loads(result)
     assert parsed_result["anomalies_found"] == 1
     assert parsed_result["anomalous_data"][0]["value"] == 10000
-    
-    # 5. Cleanup
+
     data_loader.conn.execute("DROP TABLE anomaly_test")
 
 def test_detect_anomalies_wrong_column_type():

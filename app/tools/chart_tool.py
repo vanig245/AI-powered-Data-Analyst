@@ -30,8 +30,6 @@ def generate_chart(sql_query: str, chart_type: str, x_column: str, y_column: str
             sns.barplot(data=df, x=x_column, y=y_column)
         elif chart_type == 'line':
             sns.lineplot(data=df, x=x_column, y=y_column, marker='o', markersize=8)
-        elif chart_type == 'scatter':
-            sns.scatterplot(data=df, x=x_column, y=y_column)
         elif chart_type == 'pie':
             plt.pie(df[y_column], labels=df[x_column], autopct='%1.1f%%')
         else:
